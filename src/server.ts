@@ -1,16 +1,17 @@
 import app from "./app"
-import dotenv from 'dotenv'
-dotenv.config();
+import config from "./config";
 
-const PORT = process.env.PORT;
-const startServer = () => {
+
+const PORT = config.port;
+const bootstrap = () => {
     try {
         app.listen(PORT, () => {
             console.log(`Server is Running on port : ${PORT}`);
         })
     } catch (error) {
         console.log(error);
+        process.exit(1);
     }
 }
 
-startServer();
+bootstrap();

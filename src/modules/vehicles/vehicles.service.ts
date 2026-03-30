@@ -35,7 +35,7 @@ const createVehicle = async (payload: IVehicle) => {
     return result.rows[0];
 };
 
-const getVehicles= async () => {
+const getVehicles = async () => {
     const result = await pool.query(`
         SELECT id, vehicle_name, type, registration_number, daily_rent_price, availability_status 
         FROM vehicles
@@ -59,45 +59,51 @@ const getVehicleById = async (vehicleId: number) => {
     return result.rows[0];
 };
 
-const updateVehicle = async(vehicleId: number, data: any) => {
+const updateVehicle = async (vehicleId: number, data: any) => {
     const temp = ["vehicle_name", "type", "registration_number", "daily_rent_price", "availability_status"];
     const fields: string[] = [];
     const values: any[] = [];
     let index = 1;
-    for(const key in data){
-        if(temp.includes(key)){
+    for (const key in data) {
+        if (temp.includes(key)) {
             fields.push(`${key} = $${index}`)
             values.push(data[key]);
             index++;
         }
     }
 
-    if(fields.length === 0){
+    if (fields.length === 0) {
         throw new Error("No valid fields provided");
     }
 
     const query = `update vehicles set ${fields.join(", ")} where id = ${vehicleId} returning id, vehicle_name, type, registration_number, daily_rent_price, availability_status`;
-    const result = await pool.query(query,values);
-     if (result.rows.length === 0) {
+    const result = await pool.query(query, values);
+    if (result.rows.length === 0) {
         throw new Error("Vehicle not found");
     }
 
     return result.rows[0];
 }
-/**
- * id SERIAL PRIMARY KEY,
-            vehicle_name VARCHAR(50) NOT NULL,
-            type VARCHAR(50) CHECK(type IN ('car', 'bike', 'van', 'SUV')) NOT NULL,
-            registration_number VARCHAR(100) NOT NULL UNIQUE,
-            daily_rent_price INT NOT NULL CHECK(daily_rent_price >= 0),
-            availability_status VARCHAR(10) CHECK(availability_status IN ('available','booked')) NOT NULL DEFAULT 'available',
-            created_at TIMESTAMP DEFAULT NOW(),
-            updated_at TIMESTAMP DEFAULT NOW()
- */
+
+const deleteVehicle = async (vehicleId: number) => {
+    const bookedVehicle = await pool.query(
+        `SELECT 1 FROM bookings 
+     WHERE vehicle_id = $1 AND status = 'active' 
+     LIMIT 1`,
+        [vehicleId]
+    );
+    if (bookedVehicle.rows.length > 0) {
+        throw new Error("Vehicle has active bookings. Cannot delete.");
+    }
+
+    await pool.query(`delete from vehicles where id = $1`, [vehicleId]);
+    return true
+}
 
 export const vehiclesService = {
     createVehicle,
     getVehicles,
     getVehicleById,
-    updateVehicle
+    updateVehicle,
+    deleteVehicle
 };

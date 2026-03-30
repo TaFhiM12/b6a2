@@ -18,7 +18,7 @@ const getUser = async (req: Request, res: Response) => {
     }
 }
 
-const updateUser = async(req: Request, res: Response) => {
+const updateUser = async (req: Request, res: Response) => {
     try {
         const userId = parseInt(req.params.userId as string);
         const currentUser = req.user;
@@ -50,7 +50,29 @@ const updateUser = async(req: Request, res: Response) => {
     }
 }
 
+const deleteUser = async (req: Request, res: Response) => {
+    try {
+        const userId = parseInt(req.params.userId as string);
+
+        await userService.deleteUser(userId);
+
+        res.status(200).json({
+            success: true,
+            message: "User deleted successfully"
+        });
+
+    } catch (err: any) {
+        console.error(err);
+
+        res.status(400).json({
+            success: false,
+            message: err.message || "Something went wrong"
+        });
+    }
+};
+
 export const userController = {
     getUser,
-    updateUser
+    updateUser,
+    deleteUser
 }

@@ -17,6 +17,10 @@ export interface IUserInfo {
 
 const userRegister = async (payload: IUserInfo) => {
     const { name, email, password, phone, role } = payload;
+    if (!password) {
+        throw new Error("Password is required");
+    }
+
     if (password.length < 6) {
         throw new Error("Password must be at least 6 characters long");
     }
@@ -33,12 +37,12 @@ const userRegister = async (payload: IUserInfo) => {
 const userLogin = async (email: string, password: string) => {
     const result = await pool.query(`SELECT * FROM users WHERE email = $1`, [email]);
     if (result.rows.length === 0) {
-        return null; 
+        return null;
     }
     const user = result.rows[0];
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
-        return false; 
+        return false;
     }
     const token = jwt.sign(
         { id: user.id, name: user.name, email: user.email, role: user.role },

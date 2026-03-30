@@ -4,11 +4,11 @@ import auth from "../../middleware/auth";
 
 const router = Router();
 
-router.get('/', auth(), vehiclesController.getVehicles);
+router.get('/', vehiclesController.getVehicles);
 router.get('/:vehicleId', vehiclesController.getVehicleById);
 router.post('/', auth(true), vehiclesController.createVehicle);
 router.put('/:vehicleId', auth(true), vehiclesController.updateVehicle);
-// router.delete('/:vehicleId', );
+router.delete('/:vehicleId', auth(true), vehiclesController.deleteVehicle);
 
 
 export const vehicleRouter = router;

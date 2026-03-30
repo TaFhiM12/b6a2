@@ -93,20 +93,30 @@ const updateVehicle = async (req: Request, res: Response) => {
     }
 }
 
-/**
- * "data": {
-    "id": 2,
-    "vehicle_name": "Honda Civic 2023",
-    "type": "car",
-    "registration_number": "XYZ-5678",
-    "daily_rent_price": 45,
-    "availability_status": "available"
-  }
- */
+const deleteVehicle = async (req: Request, res: Response) => {
+    try {
+        const vehicleId = parseInt(req.params.vehicleId as string);
+
+        await vehiclesService.deleteVehicle(vehicleId);
+
+        res.status(200).json({
+            "success": true,
+            "message": "Vehicle deleted successfully"
+        });
+    } catch (err: any) {
+        console.error(err);
+
+        res.status(400).json({
+            success: false,
+            message: err.message || "Something went wrong"
+        });
+    }
+}
 
 export const vehiclesController = {
     createVehicle,
     getVehicles,
     getVehicleById,
-    updateVehicle
+    updateVehicle,
+    deleteVehicle
 };

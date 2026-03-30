@@ -170,7 +170,7 @@ Authorization: Bearer <your_token>
 ### 1️⃣ Clone Repository
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/TaFhiM12/b6a2.git
 cd assignment-2
 ```
 

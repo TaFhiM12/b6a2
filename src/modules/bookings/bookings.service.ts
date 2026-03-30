@@ -76,7 +76,6 @@ const getAllBookings = async (user: any) => {
             ORDER BY b.created_at DESC
         `);
 
-        // ✅ Format response
         return result.rows.map((row) => ({
             id: row.id,
             customer_id: row.customer_id,
@@ -96,7 +95,6 @@ const getAllBookings = async (user: any) => {
         }));
     }
 
-    // ✅ Customer: see only own bookings
     else {
         const result = await pool.query(
             `
